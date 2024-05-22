@@ -3,6 +3,9 @@ import {useParams} from 'react-router-dom';
 import {firestore} from './firebase';
 import {collection, getDoc,setDoc,doc} from 'firebase/firestore';
 import Button from './components/button';
+import { useNavigate } from 'react-router-dom';
+import Popup  from './popup';
+
 
 const Edit = () => {
   const { id } = useParams();
@@ -10,6 +13,10 @@ const Edit = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [subloading,setSubLoading]=useState(false);
   const [error, setError] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+  const nav=useNavigate();
+
 
 
   useEffect(() => {
@@ -37,6 +44,12 @@ const Edit = () => {
         setSubLoading(true);
         await setDoc(doc(firestore,'Blogs',id),blog);
         setSubLoading(false);
+        setPopupMessage('Blog updated successfully!');
+        setIsPopupOpen(true);
+        setTimeout(() => {
+          setIsPopupOpen(false);
+          nav('/admin');
+        }, 1000); 
         console.log('Submitting edited blog:', blog); // For now, just log the data
     }
     catch(error){
@@ -53,7 +66,7 @@ const Edit = () => {
       {isLoading && <p>Loading blog data...</p>}
       {error && <p className="text-red-500">Error: {error.message}</p>}
       {blog && (
-        <div className="flex justify-center">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh w-1/2 mx-8">
+        <div className="flex justify-center">  <div className="sm:p-8 md:p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh sm:w-1/2 md:w-1/2 lg:w-1/2 mx-8">
         <form onSubmit={handleSubmit} className="bg-black text-white p-8 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-2xl font-bold mb-4">Edit Blog Post</h2>
           <div className="mb-4">
@@ -77,7 +90,7 @@ const Edit = () => {
             <textarea
               id="content"
               name="Content"
-              className="shadow-sm bg-gray-50 text-black border focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm rounded-md px-3 py-2"
+              className="shadow-sm bg-gray-50 text-black border focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm rounded-md px-3 py-2 h-40"
               value={blog.Content}
               onChange={(e)=>handleChange(e)}
               required
@@ -94,6 +107,7 @@ const Edit = () => {
         </div>
         </div>
       )}
+      <Popup isOpen={isPopupOpen} message={popupMessage} onClose={() => setIsPopupOpen(false)} />
     </div>
   );
 };

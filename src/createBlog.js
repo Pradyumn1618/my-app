@@ -81,8 +81,8 @@ useEffect(() => {
 <div className="min-h-screen bg-black text-white flex flex-col">
   <div className="w-full flex justify-start items-start p-4 mt-4">  <Button onClick={() => window.history.back()}>Back</Button>
   </div>
-  <div className="flex justify-center mt-8">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh w-1/2 mx-8">
-      <form onSubmit={handleSubmit} className="bg-black text-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+  <div className="flex justify-center sm:mt-8 md:mt-8 lg:mt-8">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh sm:w-1/2 md:w-1/2 lg:w-1/2 mx-8">
+      <form onSubmit={handleSubmit} className="bg-black text-white sm:p-8 md:p-8 lg:p-8 rounded-lg shadow-lg w-full max-w-lg">
         <h2 className="text-3xl font-bold mb-6">Create New Blog</h2>
         <input
           type="text"

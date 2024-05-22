@@ -18,12 +18,10 @@ const UserPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setUser(user);
+    
+      setUser(JSON.parse(localStorage.getItem('user')));
       setIsLoading(false);
-    });
-
-    return () => unsubscribe();
+    
   }, []);
 
   useEffect(() => {
@@ -90,7 +88,8 @@ const UserPage = () => {
     } else {
       const filtered = blogs.filter(blog =>
         blog.title.toLowerCase().includes(query.toLowerCase()) ||
-        blog.Content.toLowerCase().includes(query.toLowerCase())
+        blog.Content.toLowerCase().includes(query.toLowerCase()) ||
+        blog.Owner.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredBlogs(filtered);
     }
@@ -101,6 +100,9 @@ const UserPage = () => {
   const handleLogout = () => {
     setSidebarOpen(false);
     setIsLoggedIn(false);
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('isAdmin');
     signOut(auth);
     navigate('/');
   };
@@ -148,7 +150,7 @@ const UserPage = () => {
             </div>
 
             </div>
-            <div className="md:text-5xl lg:text-6xl sm:text-4xl text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent text-center">BlogSite
+            <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent text-center">BlogSite
           </div>
 
 
@@ -162,7 +164,7 @@ const UserPage = () => {
         <div className="p-4 mt-2">
           <div className="flex items-center justify-between">
             <div></div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent">{name}</h2>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent">{user?.displayName}</h2>
             <button onClick={toggleSidebar} className="text-white">
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -185,7 +187,8 @@ const UserPage = () => {
       <div className={`${sidebarOpen ? 'md:ml-40 lg:ml-40' : ''} transition-margin duration-300 ease-in-out w-full flex flex-col items-center justify-center mt-24 px-4 ${sidebarOpen ? 'sm:bg-transparent bg-black bg-opacity-50' : ''}`}>
         <div className='grid md:grid-cols-2 gap-6 w-2/3'>
           {filteredBlogs.map(blog => (
-            <div key={blog.id} className="bg-white rounded-lg shadow-md overflow-hidden blog-card mx-auto w-full">
+            <div key={blog.id} className="bg-gray text-white rounded-lg shadow-md overflow-hidden blog-card mx-auto w-full" style={{ boxShadow: '0 4px 6px rgba(255, 255,255,0.5)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}
+            >
               <Link to={`/blog/${blog.id}`}>
                 <img
                   src={blog.imageUrl || 'https://www.patterns.dev/img/reactjs/react-logo@3x.svg'}
@@ -196,10 +199,10 @@ const UserPage = () => {
               <div className="p-4">
                 <div className="flex flex-col mb-2">
                   <div className="text-gray-500 text-left font-medium mb-2">{blog.Owner}</div>
-                  <h3 className="text-2xl font-bold text-black">{blog.title}</h3>
+                  <h3 className="text-2xl font-bold text-white">{blog.title}</h3>
                 </div>
                 <p className="text-gray-700 text-base leading-relaxed mb-4">{blog.Content.substring(0, 100)}...</p>
-                <Link to={`/blog/${blog.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-700">
+                <Link to={`/blog/${blog.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
                   Read More
                   <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns
                     ="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>

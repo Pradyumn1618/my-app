@@ -84,7 +84,7 @@ const BlogPage = () => {
         <img
           src={blog.imageUrl || 'https://www.patterns.dev/img/reactjs/react-logo@3x.svg'}
           alt={blog.title}
-          className="w-3/5 h-auto object-cover rounded mb-4"
+          className=" w-full sm:w-3/5 md:w-3/5 lg:w-3/5 h-auto object-cover rounded mb-4"
         />
         </div>
         <div className="text-lg text-gray-400 text-left mb-4"><i>Author: {blog.Owner}</i></div>
@@ -98,7 +98,7 @@ const BlogPage = () => {
 
         <div className='flex flex-col items-center justify-center'>
         {/* Comment section with increased width and background */}
-        <div className="w-1/2 mt-8 bg-black-800 flex flex-col items-center justify-center rounded p-6">
+        <div className="sm:w-1/2 md:w-1/2 lg:w-1/2 w-full mt-8 bg-black-800 flex flex-col items-center justify-center rounded p-6">
           {/* Improved comment section styling */}
           <h2 className="text-2xl font-bold mb-4 text-white">Leave a Comment</h2>
           <form onSubmit={handleSubmitComment} className='w-full'>
@@ -116,7 +116,7 @@ const BlogPage = () => {
           <div className='w-full flex flex-col items-center justify-center'>
 
           {/* Displaying Comments */}
-          <div className="mt-8 w-4/5">
+          <div className="mt-8 sm:w-4/5 md:w-4/5 lg:w-4/5 w-full">
   <h2 className='text-2xl font-bold mb-4 text-white'>Comments</h2>
   {comments.length > 0 ? (
     <>
@@ -134,7 +134,7 @@ const BlogPage = () => {
           Load More
         </button>
       )}
-      {displayedCommentsCount > 5 && (
+      {displayedCommentsCount === comments.length && (
         <button onClick={() => setDisplayedCommentsCount(5)}>
           Show Less
         </button>

@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, signInWithPopup, browserSessionPersistence,signInWithRedirect,getRedirectResult } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, browserSessionPersistence,updateProfile } from "firebase/auth";
 import { auth, firestore,provider } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import Button from './components/button';
@@ -44,15 +44,26 @@ try{
         const user = userCredential.user;
         const docRef = doc(firestore, 'Users', user.uid);
         const docSnap = await getDoc(docRef);
+
+        if(user.displayName==null){
+        await updateProfile(user, {
+          displayName: docSnap.data().name
+      });
+    }
        
         setSubLoading(false);
           if (docSnap.exists()) {
             setIsLoggedIn(true);
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('user', JSON.stringify(user));
             if (docSnap.data().isAdmin) {
               setIsAdmin(true);
+              localStorage.setItem('isAdmin', 'true');
               console.log('Admin signed in');
               navigate('/admin');
             } else {
+              setIsAdmin(false);
+              localStorage.setItem('isAdmin', 'false');
               console.log('User signed in');
               console.log(user)
               navigate('/user');
@@ -88,10 +99,15 @@ try{
 
     if (docSnap.exists()) {
       setIsLoggedIn(true);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('user', JSON.stringify(user));
       if (docSnap.data().isAdmin) {
         setIsAdmin(true);
+        localStorage.setItem('isAdmin', 'true');
         navigate('/admin');
       } else {
+        setIsAdmin(false);
+        localStorage.setItem('isAdmin', 'false');
         navigate('/user');
       }
     } else {
@@ -101,6 +117,8 @@ try{
         name: user.displayName
       });
       setIsLoggedIn(true);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('user', JSON.stringify(user));
       navigate('/user');
     }
   

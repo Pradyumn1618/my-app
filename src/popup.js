@@ -1,18 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-const ErrorPopup = ({ message, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, 3000); // Change this to control the duration
-
-    return () => clearTimeout(timer); // This will clear the timer when the component unmounts
-  }, [onClose]);
-
-  if (!isVisible) {
+const Popup = ({ isOpen, message, onClose }) => {
+  if (!isOpen) {
     return null;
   }
 
@@ -26,7 +15,7 @@ const ErrorPopup = ({ message, onClose }) => {
             <div className="sm:flex sm:items-start">
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                  Error
+                  Success
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
@@ -37,7 +26,7 @@ const ErrorPopup = ({ message, onClose }) => {
             </div>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={onClose}>
+            <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={onClose}>
               Close
             </button>
           </div>
@@ -47,4 +36,4 @@ const ErrorPopup = ({ message, onClose }) => {
   );
 };
 
-export default ErrorPopup;
+export default Popup;

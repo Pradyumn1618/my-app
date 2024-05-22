@@ -29,9 +29,31 @@ function App() {
   // const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoggedIn(JSON.parse(localStorage.getItem('isLoggedIn')) || false);
+    setIsAdmin(JSON.parse(localStorage.getItem('isAdmin')) || false);
+    setIsLoading(false);
+  }, []);
+  
+  if (isLoading) {
+    return <div>Loading...</div>; // Replace this with your actual loading component
+  }
 
   return (
-      <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin }}>
+    <AuthContext.Provider value={{
+      isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')) || false,
+      setIsLoggedIn: (value) => {
+        localStorage.setItem('isLoggedIn', JSON.stringify(value));
+        setIsLoggedIn(value);
+      },
+      isAdmin: JSON.parse(localStorage.getItem('isAdmin')) || false,
+      setIsAdmin: (value) => {
+        localStorage.setItem('isAdmin', JSON.stringify(value));
+        setIsAdmin(value);
+      },
+    }}>
     <Router>
       <div className="App">
         <Routes>
