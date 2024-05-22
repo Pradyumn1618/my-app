@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+.separator{
+  border-top: 1px solid purple;
+  ; /* Adjust color and thickness as needed */
+  margin: 20px 0; /* Adjust margin for spacing */
+}
+.gradient-text {
+  background-image: linear-gradient(to right, sk); /* Adjust colors as needed */
+  background-clip: text;
+  -webkit-background-clip: text; /* For older WebKit browsers */
+  color: transparent; /* Makes the text color transparent to reveal the gradient */
+}
+
+.shadow-right{
+  box-shadow: 4px 0 15px -2px rgba(99, 7, 228, 0.7);
+}
+.shadow-below{
+  box-shadow: 0 0 0px 0px purple;
+}
