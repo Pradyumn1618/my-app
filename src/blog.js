@@ -74,7 +74,7 @@ const BlogPage = () => {
 };
 
   return (
-    <div className='min-h-screen flex flex-row bg-black'>
+    <div className='min-h-screen flex flex-row bg-black text-white'>
       <div className='w-1/5 bg-black text-white p-6'>
         <Button onClick={() => window.history.back()}>Back</Button>
       </div>
@@ -84,22 +84,19 @@ const BlogPage = () => {
         <img
           src={blog.imageUrl || 'https://www.patterns.dev/img/reactjs/react-logo@3x.svg'}
           alt={blog.title}
-          className=" w-full sm:w-3/5 md:w-3/5 lg:w-3/5 h-auto object-cover rounded mb-4"
+          className="sm:w-3/5 md:w-3/5 lg:w-3/5 h-auto object-cover rounded mb-4"
         />
         </div>
         <div className="text-lg text-gray-400 text-left mb-4"><i>Author: {blog.Owner}</i></div>
-        <div className="mb-4 text-left" style={{ whiteSpace: 'pre-wrap' }}>{blog.Content}</div>
-        <div className="text-right mt-4">
+        <div className="mb-4 text-left text-white blog-content" style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: blog.Content }}/>        <div className="text-right mt-4">
           <span className="text-sm"><i>Dated: {new Date(blog.createdAt.seconds * 1000).toLocaleDateString()}</i></span>
         </div>
 
-        {/* Separator line between blog content and comments */}
         <hr className="w-full border-purple-700 mt-8 mb-4" />
 
         <div className='flex flex-col items-center justify-center'>
-        {/* Comment section with increased width and background */}
-        <div className="sm:w-1/2 md:w-1/2 lg:w-1/2 w-full mt-8 bg-black-800 flex flex-col items-center justify-center rounded p-6">
-          {/* Improved comment section styling */}
+        
+        <div className="sm:w-1/2 md:w-1/2 lg:w-1/2 mt-8 bg-black-800 flex flex-col items-center justify-center rounded p-6">
           <h2 className="text-2xl font-bold mb-4 text-white">Leave a Comment</h2>
           <form onSubmit={handleSubmitComment} className='w-full'>
             <textarea
@@ -116,7 +113,7 @@ const BlogPage = () => {
           <div className='w-full flex flex-col items-center justify-center'>
 
           {/* Displaying Comments */}
-          <div className="mt-8 sm:w-4/5 md:w-4/5 lg:w-4/5 w-full">
+          <div className="mt-8 sm:w-4/5 md:w-4/5 lg:w-4/5">
   <h2 className='text-2xl font-bold mb-4 text-white'>Comments</h2>
   {comments.length > 0 ? (
     <>

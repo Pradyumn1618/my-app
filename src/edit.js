@@ -5,6 +5,9 @@ import {collection, getDoc,setDoc,doc} from 'firebase/firestore';
 import Button from './components/button';
 import { useNavigate } from 'react-router-dom';
 import Popup  from './popup';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 
 
 const Edit = () => {
@@ -38,6 +41,10 @@ const Edit = () => {
     setBlog({ ...blog, [event.target.name]: event.target.value });
   };
 
+  const handleChangeContent = (event) => {
+    setBlog({ ...blog, Content: event }); // Update Content state with entire event object
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try{
@@ -61,14 +68,16 @@ const Edit = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
+      <header className='justify-between items-center'>
           <div className="w-full flex justify-start items-start p-4 mt-4">  <Button onClick={() => window.history.back()}>Back</Button>
 </div>
+      <h2 className="text-2xl font-bold mb-4">Edit Blog Post</h2>
+      </header>
       {isLoading && <p>Loading blog data...</p>}
       {error && <p className="text-red-500">Error: {error.message}</p>}
       {blog && (
-        <div className="flex justify-center">  <div className="sm:p-8 md:p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh sm:w-1/2 md:w-1/2 lg:w-1/2 mx-8">
-        <form onSubmit={handleSubmit} className="bg-black text-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-          <h2 className="text-2xl font-bold mb-4">Edit Blog Post</h2>
+        <div className="flex justify-center">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-auto w-full mx-8">
+        <form onSubmit={handleSubmit} className="bg-black text-white p-8 rounded-lg shadow-lg w-full">
           <div className="mb-4">
             <label htmlFor="title" className="block mb-2 text-sm font-medium">
               Title
@@ -83,18 +92,40 @@ const Edit = () => {
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-12">
             <label htmlFor="content" className="block mb-2 text-sm font-medium">
               Content
             </label>
-            <textarea
-              id="content"
-              name="Content"
-              className="shadow-sm bg-gray-50 text-black border focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm rounded-md px-3 py-2 h-40"
-              value={blog.Content}
-              onChange={(e)=>handleChange(e)}
-              required
-            />
+            <ReactQuill
+            value={blog.Content}
+            name="Content"
+            id='Content'
+            onChange={(e)=>handleChangeContent(e)}
+            modules={{
+              toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                ['blockquote', 'code-block'],
+
+                [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+                [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+                [{ 'direction': 'rtl' }],                         // text direction
+
+                [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+                [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                [{ 'font': [] }],
+                [{ 'align': [] }],
+
+                ['clean'],                                         // remove formatting button
+
+                ['link', 'image', 'video']                         // link and image, video
+              ]
+            }}
+            className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
+          />
           </div>
           <Button
             type="submit"

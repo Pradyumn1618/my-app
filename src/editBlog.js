@@ -52,7 +52,10 @@ const EditBlog = () => {
   </thead>
   <tbody>
     {blogs.map(blog => (
-      <tr key={blog.id} className="w-full flex flex-row justify-between items-center" style={{ boxShadow: '4px 4px 0px rgba(255, 255,255,0.3)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}>  <td className="py-4 w-1/2 sm:text-base md:text-base text-xs">  <h3 className="text-lg font-medium mb-1 sm:text-base md:text-base text-xs">{blog.title.substring(0, 30) + "..."}</h3>  <p className="text-gray-600 sm:text-base md:text-base text-xs">{blog.Content.substring(0, 50) + "..."}</p>  </td>
+      <tr key={blog.id} className="w-full flex flex-row justify-between items-center" style={{ boxShadow: '4px 4px 0px rgba(255, 255,255,0.3)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}>  <td className="py-4 w-1/2 sm:text-base md:text-base text-xs">  <h3 className="text-lg font-medium mb-1 sm:text-base md:text-base text-xs">{blog.title.substring(0, 30) + "..."}</h3>  <p 
+      className="text-gray-700 text-base leading-relaxed mb-4" 
+      dangerouslySetInnerHTML={{ __html: blog.Content.substring(0, 50) + '...' }}
+    />               </td>
         <td className="px-4 py-4 sm:text-base md:text-base text-xs flex justify-center items-center w-1/4">  {blog.createdAt.toDate().toLocaleDateString()}
         </td>
         <td className="px-4 py-4  flex justify-center items-center w-1/4">
