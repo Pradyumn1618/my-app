@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, collection, getDocs, query, where, addDoc, Timestamp } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+import { doc, getDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { firestore,auth } from './firebase';
 import Button from './components/button';
 import './App.css';
@@ -16,20 +16,23 @@ const BlogPage = () => {
 
   const user = auth.currentUser;
 
-  // Fetch comments on initial render and whenever the blog post changes
   useEffect(() => {
-    const fetchComments = async () => {
-      const querySnapshot = await getDocs(collection(firestore, 'Blogs', id, 'Comments'));
-      const commentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      commentsData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-      setComments(commentsData);
+    const fetchComments = () => {
+      const commentsCollection = collection(firestore, 'Blogs', id, 'Comments');
+      const unsubscribe = onSnapshot(commentsCollection, (snapshot) => {
+        let commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        commentsData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+        setComments(commentsData);
+      });
+  
+      return () => {
+        unsubscribe();
+        setSuccessfullSubmit(false);
+      };
     };
-
+  
     fetchComments();
-    return () => {
-      setSuccessfullSubmit(false);
-    };
-  }, [id,successfullSubmit]);
+  }, [id, successfullSubmit]);
 
   useEffect(() => {
     const fetchBlog = async () => {

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDoc, doc,onSnapshot } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import { signOut } from 'firebase/auth';
-import Button from './components/button';
 import { AuthContext } from './authContext';
 import './App.css';
 
@@ -65,15 +64,20 @@ const UserPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const querySnapshot = await getDocs(collection(firestore, 'Blogs'));
-      const blogsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBlogs(blogsData);
-      setFilteredBlogs(blogsData);
+    const fetchBlogs = () => {
+      const blogsCollection = collection(firestore, 'Blogs');
+      onSnapshot(blogsCollection, (snapshot) => {
+        const blogsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        blogsData.sort(function (a, b) {
+          return b.createdAt.toDate() - a.createdAt.toDate();
+        })
+        setBlogs(blogsData);
+        setFilteredBlogs(blogsData);
+      });
     };
-
+  
     fetchBlogs();
-
+  
   }, []);
 
   const handleSearchChange = (e) => {

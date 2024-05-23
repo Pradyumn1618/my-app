@@ -9,6 +9,7 @@ import BlogPage from './blog';
 import Create from './createBlog';
 import EditBlog from './editBlog';
 import Edit from './edit';
+import AllUsers from './AllUsers';
 import { AuthContext } from './authContext';
 // import {auth} from './firebase'
 // import { getAuth,onAuthStateChanged } from 'firebase/auth';
@@ -66,6 +67,7 @@ function App() {
         <Route path="/createBlog" element={isLoggedIn && isAdmin ? <Create/>  : <Navigate to="/login" replace />}/>
         <Route path="/editBlog" element={isLoggedIn && isAdmin ? <EditBlog/>  : <Navigate to="/login" replace />}/>
         <Route path="/edit/:id" element={isLoggedIn&&isAdmin ? <Edit/>:<Navigate to="/login" replace/>}/>
+        <Route path="/AllUsers" element={isLoggedIn&&isAdmin? <AllUsers/>:<Navigate to="/login" replace/>}/>
         </Routes>
       </div>
     </Router>

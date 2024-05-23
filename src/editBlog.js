@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc,query,where } from 'firebase/firestore';
+import { collection, deleteDoc, doc,query,where,onSnapshot } from 'firebase/firestore';
 import {useNavigate} from 'react-router-dom';
 import { firestore,auth } from './firebase'; 
 import Button from './components/button';
@@ -10,14 +10,18 @@ const EditBlog = () => {
   const navigate=useNavigate();
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-        const userId = auth.currentUser.displayName; // Replace with your method of getting the current user's ID
-        const blogsQuery = query(collection(firestore, 'Blogs'), where('Owner', '==', userId));
-        const blogsSnapshot = await getDocs(blogsQuery);
-        const fetchedBlogs = blogsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const fetchBlogs = () => {
+      const userId = auth.currentUser.displayName; // Replace with your method of getting the current user's ID
+      const blogsQuery = query(collection(firestore, 'Blogs'), where('Owner', '==', userId));
+      const unsubscribe = onSnapshot(blogsQuery, (snapshot) => {
+        const fetchedBlogs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         setBlogs(fetchedBlogs);
-      };
-
+      });
+  
+      // Cleanup function to unsubscribe from the snapshot listener when the component unmounts
+      return () => unsubscribe();
+    };
+  
     fetchBlogs();
   }, []);
 

@@ -6,6 +6,8 @@ module.exports = {
   theme: {
     extend: {
       height: {
+        '30vh':'30vh',
+        '10vh':'10vh',
         '50vh': '50vh',
         '60vh': '60vh',
         '70vh': '70vh',

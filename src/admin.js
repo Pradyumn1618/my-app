@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDoc, doc,onSnapshot } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import { signOut } from 'firebase/auth';
-import Button from './components/button';
 import { AuthContext } from './authContext';
 import './App.css';
 
@@ -63,15 +62,20 @@ const AdminPage = () => {
 
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const querySnapshot = await getDocs(collection(firestore, 'Blogs'));
-      const blogsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBlogs(blogsData);
-      setFilteredBlogs(blogsData);
+    const fetchBlogs = () => {
+      const blogsCollection = collection(firestore, 'Blogs');
+      onSnapshot(blogsCollection, (snapshot) => {
+        const blogsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        blogsData.sort(function (a, b) {
+          return b.createdAt.toDate() - a.createdAt.toDate();
+        })
+        setBlogs(blogsData);
+        setFilteredBlogs(blogsData);
+      });
     };
-
+  
     fetchBlogs();
-
+  
   }, []);
 
   const handleSearchChange = (e) => {
@@ -108,6 +112,9 @@ const AdminPage = () => {
 
   const handleEditBlog = () => {
     navigate('/editBlog');
+  };
+  const handleUsers = () => {
+    navigate('/AllUsers');
   };
 
   const toggleSidebar = () => {
@@ -195,6 +202,14 @@ const AdminPage = () => {
               style={{ boxShadow: '0 4px 6px rgba(255, 255,255,0.3)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}
             >
               Your Blogs
+            </button>
+
+            <button
+              className="bg-black text-white font-bold mb-2 px-4 py-2 rounded transition-all duration-500 hover:bg-clip-text hover:text-transparent hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 shadow-md shadow-white-500 hover:shadow:lg button w-48"
+              onClick={handleUsers}
+              style={{ boxShadow: '0 4px 6px rgba(255, 255,255,0.3)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}
+            >
+              Users
             </button>
 
 
