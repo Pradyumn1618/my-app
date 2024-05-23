@@ -68,4 +68,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# my-app
+# BlogSite
+## Technologies Used
+
+- ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB)
+- ![Tailwind CSS](https://img.shields.io/badge/-Tailwind%20CSS-38B2AC?logo=tailwind-css&logoColor=white)
+- ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=white)
+  
+## Description
+
+This project is a blog website built using React, Tailwind CSS and Firebase. Users can read blogs created by admins of the site.
+
+This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)
+
+
