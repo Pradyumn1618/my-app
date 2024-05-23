@@ -122,7 +122,7 @@ const Create = () => {
                 ['link', 'image', 'video']                         // link and image, video
               ]
             }}
-            className="w-full p-2 mb-6 rounded bg-white text-black h-60vh"
+            className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
           />
           <input
             type="file"
