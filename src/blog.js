@@ -21,6 +21,7 @@ const BlogPage = () => {
     const fetchComments = async () => {
       const querySnapshot = await getDocs(collection(firestore, 'Blogs', id, 'Comments'));
       const commentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      commentsData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
       setComments(commentsData);
     };
 

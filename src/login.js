@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, browserSessionPersistence,updateProfile } from "firebase/auth";
 import { auth, firestore,provider } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -159,7 +159,8 @@ try{
         <div className='flex flex-col justify-center items-center'>
         <Button className='w-full mb-6' type="submit">{subloading ? 'Signing In...' : 'Sign In'}</Button>
         <div className='text-left w-full'>
-        <p className='text-sm mb-6'>Don't have an account? <a href="/signup" className='text-blue-500'>Sign Up</a></p></div>
+        <p className='text-sm mb-6'>Don't have an account? <Link to="/signup" className='text-blue-500'>Sign Up</Link>
+</p></div>
         <p className='mb-6'>Or</p>
         </div>
       </form>

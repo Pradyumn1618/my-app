@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, firestore,provider } from './firebase';
 import {doc,getDoc,setDoc} from 'firebase/firestore';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate,Link} from 'react-router-dom';
 import Button from './components/button';
 import ErrorPopup from './error';
 import AOS from 'aos'
@@ -139,7 +139,7 @@ function SignupPage() {
       <div className='flex flex-col justify-center items-center'>
         <Button className='w-full mb-6' type="submit">{subloading ? 'Signing Up...' : 'Sign Up'}</Button>
         <div className='text-left w-full'>
-        <p className='text-sm mb-6'>Already an user? <a href="/login" className='text-blue-500'>Sign In</a></p></div>
+        <p className='text-sm mb-6'>Already an user? <Link to="/login" className='text-blue-500'>Sign In</Link></p></div>
         <p className='mb-6'>Or</p>
         </div>
   </form>
