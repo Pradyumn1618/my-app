@@ -18,6 +18,12 @@ function SignupPage() {
   const [subloading, setSubLoading] = useState(false);
   const [showErrorPopup,setShowErrorPopup] = useState(false);
   const [errorMsg,setErrorMsg]=useState('');
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleVisibility = (event) => {
+    event.preventDefault();
+    setIsVisible(!isVisible);
+  };
 
   const navigate = useNavigate();
 
@@ -128,15 +134,24 @@ function SignupPage() {
           <Button className='w-full mb-6' onClick={() => navigate('/')}>Back To Home</Button>
 </div>
 
-        <div className='p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh w-full mx-8' data-aos='fade-up'>
+        <div className='p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh w-full mx-8 overflow-hidden' data-aos='fade-up'>
     <form onSubmit={handleSubmit} className='p-8 rounded-lg'>
     <h2 className='text-3xl font-bold mb-6'>Sign Up</h2>
     <input type="text" value={name} onChange={handleNameChange} placeholder='  Name' required className='w-full p-2 mb-4 rounded bg-white text-black'/>
       
       <input type="email" value={email} onChange={handleEmailChange} placeholder='  Email' required className='w-full p-2 mb-4 rounded bg-white text-black'/>
     
-      <input type="password" value={password} onChange={handlePasswordChange} placeholder='  Password' required className='w-full p-2 mb-6 rounded bg-white text-black'/>
-      <div className='flex flex-col justify-center items-center'>
+      <div className='relative'>
+        <input 
+          type={isVisible ? 'text' : 'password'} 
+          value={password} 
+          onChange={handlePasswordChange} 
+          placeholder='Password' 
+          required 
+          className='p-2 mb-6 rounded bg-white text-black w-full'
+        />
+        <button className='absolute right-0 bottom-2.5 text-black bg-white mb-6 mx-2 text-sm' onClick={handleVisibility}>{isVisible ? 'HIDE' : 'SHOW'}</button>
+        </div>      <div className='flex flex-col justify-center items-center'>
         <Button className='w-full mb-6' type="submit">{subloading ? 'Signing Up...' : 'Sign Up'}</Button>
         <div className='text-left w-full'>
         <p className='text-sm mb-6'>Already an user? <Link to="/login" className='text-blue-500'>Sign In</Link></p></div>

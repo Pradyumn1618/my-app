@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, onSnapshot,getDocs } from 'firebase/firestore';
 import { firestore,auth } from './firebase';
 import Button from './components/button';
 import './App.css';
@@ -12,7 +12,11 @@ const BlogPage = () => {
   const [commentText, setCommentText] = useState('');
   const [successfullSubmit, setSuccessfullSubmit] = useState(false);
   const [loading, setLoading]=useState(false);
-  const [displayedCommentsCount, setDisplayedCommentsCount] = useState(5);
+  const [displayedCommentsCount, setDisplayedCommentsCount] = useState(2);
+  const [replyText,setReplyText] = useState('');
+  const [showReplyInput, setShowReplyInput] = useState({});
+  const [replyVisibility,setReplyVisibility]=useState({});
+
 
   const user = auth.currentUser;
 
@@ -20,9 +24,38 @@ const BlogPage = () => {
     const fetchComments = () => {
       const commentsCollection = collection(firestore, 'Blogs', id, 'Comments');
       const unsubscribe = onSnapshot(commentsCollection, (snapshot) => {
-        let commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        commentsData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-        setComments(commentsData);
+        let commentsData = snapshot.docs.map(async doc => { 
+          const commentId = doc.id;
+        const commentData = doc.data();
+
+        const repliesCollection = collection(firestore, 'Blogs', id, 'Comments', commentId, 'Replies');
+        const replySnapshot = await getDocs(repliesCollection);
+        const replies = replySnapshot.docs.map(doc => ({id:doc.id,...doc.data()}));
+         
+        return {
+          id: commentId,
+          replies,
+          ...commentData
+        };
+
+         });
+         Promise.all(commentsData).then(commentsWithReplies => {
+          const commentObjects = commentsWithReplies.map(comment => {
+            const { id, replies, ...commentData } = comment;
+            return { id, replies, ...commentData };
+          });
+          
+          commentObjects.sort((a,b)=>b.createdAt-a.createdAt);
+
+        setComments(commentObjects);
+        const initialShowReplyInput = commentsData.reduce((acc, comment) => {
+          acc[comment.id] = false;
+          return acc;
+        }, {});
+        setShowReplyInput(initialShowReplyInput);
+        setReplyVisibility(initialShowReplyInput);
+        setLoading(false);
+      });
       });
   
       return () => {
@@ -49,6 +82,52 @@ const BlogPage = () => {
   }, [id]);
 
   if (!blog) return <div className="text-center text-white bg-black h-screen w-full">Loading...</div>;
+
+  const toggleReplyInput = (commentId) => {
+    setShowReplyInput({
+      ...showReplyInput,
+      [commentId]: !showReplyInput[commentId],
+    });
+  };
+  const toggleReplyVisibility = (commentId) => {
+    setReplyVisibility({
+      ...replyVisibility,
+      [commentId]: !replyVisibility[commentId],
+    });
+  };
+
+  const handleSubmitReply = async (e, commentId) => {
+    e.preventDefault();
+    // const replyText = e.target.elements.reply.value;
+    if(showReplyInput[commentId]){
+    console.log("here");
+    console.log(replyText);
+    if (!replyText) return;
+    console.log("here2");
+    // Handle empty reply
+    const newReply = {
+      User: auth.currentUser.displayName,
+      comment: replyText,
+      createdAt: new Date(), // Assuming you want timestamp for replies
+    };
+    try {
+      await addDoc(collection(firestore, 'Blogs', id, 'Comments', commentId, 'Replies'), newReply);
+      setReplyText(''); // Clear reply input after submission
+      setSuccessfullSubmit(true);
+      setLoading(false);
+      setShowReplyInput({
+        ...showReplyInput,
+        [commentId]: false,
+      });
+    } catch (error) {
+      console.error('Error adding reply:', error);
+    }
+  }
+  else{
+    toggleReplyInput(commentId);
+  }
+  }
+
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
@@ -122,24 +201,73 @@ const BlogPage = () => {
   {comments.length > 0 ? (
     <>
       {comments.slice(0, displayedCommentsCount).map((comment) => (
-        <div key={comment.id} className="border-b border-gray-400 p-4 mb-4 bg-black-700 rounded">
+        <div key={comment.id} className="border-b border-gray-400 p-2 mb-4 bg-black-700 rounded h-auto">
           <p className="font-bold mb-2 text-white text-left">{comment.User || user.name || 'Anonymous'}</p>
           <div style={{ whiteSpace: 'pre-wrap' }}><p className='text-white text-left'>{comment.comment}</p></div>
           <div className="text-right text-gray-400 text-sm">
             {comment.createdAt.toDate().toLocaleDateString()}
           </div>
-        </div>
+        
+       <form onSubmit={(e)=>handleSubmitReply(e,comment.id)} className="mt-4" key={comment.id}>
+       {showReplyInput[comment.id] && (
+        <div className='relative'>
+      <textarea  
+        value={replyText} 
+        onChange={(e) => {
+          setReplyText(e.target.value);
+        }}
+        placeholder="Write your reply here..." 
+        className="p-2 mb-6 rounded bg-white text-black w-full overflow-auto"
+      />
+      <button onClick={()=>toggleReplyInput(comment.id)} className="absolute right-2 top-2 text-black">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+      </div>
+      )}
+          <div className='container flex justify-between items-center'>
+    <button 
+      onClick={() => toggleReplyVisibility(comment.id)} 
+      className="bg-black text-gray-500 px-4 rounded mt-4"
+      >
+      {replyVisibility[comment.id] ? 'Hide Replies' : comment.replies.length>0 ? `Show ${comment.replies.length} Replies` : 'No Replies'}
+    </button>
+          <button 
+        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-1 px-4 rounded hover:from-blue-600 hover:to-purple-600 transition-all duration-500 shadow-lg"
+        type='submit'
+      >
+        {showReplyInput[comment.id] ? 'Submit Reply' : 'Reply'}
+      </button>
+      </div>
+    </form>
+    {replyVisibility[comment.id] && comment.replies.map(reply => (
+      <div className='container flex justify-end'>
+      <div key={reply.id} className="border-b border-gray-400 p-2 mb-2 bg-gray-900 rounded h-auto w-4/5 items-center text-sm">
+      <p className="font-bold mb-1 text-white text-left">{reply.User || user.name || 'Anonymous'}</p>
+      <div style={{ whiteSpace: 'pre-wrap' }}><p className='text-white text-left'>{reply.comment}</p></div>
+      <div className="text-right text-gray-400 text-xs">
+        {reply.createdAt.toDate().toLocaleDateString()}
+      </div>
+      </div>
+      </div>
+    ))}
+  </div>
+  
+        
       ))}
+      <div className='container flex flex-col justify-center items-center'>
+          {displayedCommentsCount > 4 && (
+            <button onClick={() => setDisplayedCommentsCount(displayedCommentsCount - 3)} className='mb-1 text-gray-500'>
+              Show Less
+            </button>
+          )}
       {comments.length > displayedCommentsCount && (
-        <button onClick={() => setDisplayedCommentsCount(displayedCommentsCount + 5)}>
+        <button onClick={() => setDisplayedCommentsCount(displayedCommentsCount + 3)} className='mt-1 text-gray-500'>
           Load More
         </button>
       )}
-      {displayedCommentsCount === comments.length && (
-        <button onClick={() => setDisplayedCommentsCount(5)}>
-          Show Less
-        </button>
-      )}
+      </div>
     </>
   ) : (
     <p>No comments yet.</p>

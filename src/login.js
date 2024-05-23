@@ -21,6 +21,7 @@ function LoginPage() {
   const {setIsLoggedIn, setIsAdmin} = React.useContext(AuthContext);
   const [showErrorPopup,setShowErrorPopup] = useState(false);
   const [errorMsg,setErrorMsg]=useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,6 +36,11 @@ function LoginPage() {
   const handlePasswordChange = async (event) => {
     setPassword(event.target.value);
   };
+
+  const handleVisibility = async (event) => {
+    event.preventDefault();
+    setIsVisible(!isVisible);
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -138,7 +144,7 @@ try{
 </div>
 
         <div className='p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-80vh w-full mx-8 overflow-hidden' data-aos='fade-up'>
-      <form onSubmit={handleSubmit} className='p-8 rounded-lg '>
+      <form onSubmit={handleSubmit} className='p-8 rounded-lg w-full'>
         <h2 className='text-3xl font-bold mb-6'>Sign In</h2>
         <input 
           type="email" 
@@ -148,14 +154,17 @@ try{
           required 
           className='w-full p-2 mb-4 rounded bg-white text-black'
         />
+        <div className='relative'>
         <input 
-          type="password" 
+          type={isVisible ? 'text' : 'password'} 
           value={password} 
           onChange={handlePasswordChange} 
           placeholder='Password' 
           required 
-          className='w-full p-2 mb-6 rounded bg-white text-black'
+          className='p-2 mb-6 rounded bg-white text-black w-full'
         />
+        <button className='absolute right-0 bottom-2.5 text-black bg-white mb-6 mx-2 text-sm' onClick={handleVisibility}>{isVisible ? 'HIDE' : 'SHOW'}</button>
+        </div>
         <div className='flex flex-col justify-center items-center'>
         <Button className='w-full mb-6' type="submit">{subloading ? 'Signing In...' : 'Sign In'}</Button>
         <div className='text-left w-full'>
