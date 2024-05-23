@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { collection, deleteDoc, doc,query,where,onSnapshot } from 'firebase/firestore';
 import {useNavigate} from 'react-router-dom';
 import { firestore,auth } from './firebase'; 
-import Button from './components/button';
+import {Puff} from 'react-loader-spinner'
+import { AuthContext } from './authContext';
 import './App.css';
 
 const EditBlog = () => {
   const [blogs, setBlogs] = useState([]);
+  const [isLoading,setIsLoading]=useState(true);
+  const {user} = useContext(AuthContext);
   const navigate=useNavigate();
 
   useEffect(() => {
     const fetchBlogs = () => {
-      const userId = auth.currentUser.displayName; // Replace with your method of getting the current user's ID
+      const userId = user.displayName; // Replace with your method of getting the current user's ID
       const blogsQuery = query(collection(firestore, 'Blogs'), where('Owner', '==', userId));
       const unsubscribe = onSnapshot(blogsQuery, (snapshot) => {
         const fetchedBlogs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setIsLoading(false);
         setBlogs(fetchedBlogs);
       });
   
@@ -23,9 +27,10 @@ const EditBlog = () => {
     };
   
     fetchBlogs();
-  }, []);
+  }, [user.displayName]);
 
   const handleDelete = async (blogId) => {
+    if(!window.confirm("Are you sure you want to delete this blog?"))return;
     const blogDoc = doc(firestore, 'Blogs', blogId); // Replace 'blogs' with your collection name
     await deleteDoc(blogDoc);
     setBlogs(blogs.filter(blog => blog.id !== blogId));
@@ -35,18 +40,26 @@ const EditBlog = () => {
     navigate(`/edit/${id}`)
   };
 
-  return (
-    <div className="min-h-screen flex flex-col bg-black text-white w-full px-4 py-8">
-        <header className='flex flex-row justify-between items-center'>
-        <div className='w-1/5 bg-black text-white p-6'>
-        <Button onClick={() => window.history.back()}>Back</Button>
+  if(isLoading) {
+    return (
+      <div className='min-h-screen bg-black text-white text-center'>
+        Loading...
       </div>
+    );
+  }
+  return (
+    
+    <div className="min-h-screen flex flex-col bg-black text-white w-full px-4 py-8 h-auto">
+        <header className='flex flex-row justify-center items-center'>
+        {/* <div className='w-1/5 bg-black text-white p-6'>
+        <Button onClick={() => window.history.back()}>Back</Button>
+      </div> */}
      <div className='w-full flex flex-col justify-center items-center'> <h1 className="text-4xl text-center font-bold mb-4 font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent">Your Blogs</h1></div></header>
      
      {blogs.length>0 ?(
       <>
-      <div className='w-full flex flex-col h-screen'>
-      <table className="table-auto w-full sm:w-4/5 md:w-4/5 lg:w-4/5 mx-auto shadow-md rounded-md overflow-hidden">
+      <div className='w-full flex flex-col h-auto'>
+      <table className="table-auto sm:w-4/5 md:w-4/5 lg:w-4/5 mx-auto shadow-md rounded-md overflow-hidden">
   <thead>
     <tr className="bg-gray-100 w-full bg-black font-medium flex flex-row justify-between items-center">
       <th className="px-4 py-2 sm:text-2xl md:text-2xl lg:text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent w-1/2">Title</th>

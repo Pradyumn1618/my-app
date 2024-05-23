@@ -16,25 +16,16 @@ import { AuthContext } from './authContext';
 // import { useNavigate } from 'react-router-dom';
 
 function App() {
-  // const [user, setUser] = useState(null);
-  // const auth = getAuth();
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-  //     setUser(currentUser);
-  //   });
-
-  //   // Cleanup subscription on unmount
-  //   return () => unsubscribe();
-  // }, [auth]);
-
-  // const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user,setUser]=useState(null);
+  
 
   useEffect(() => {
     setIsLoggedIn(JSON.parse(localStorage.getItem('isLoggedIn')) || false);
     setIsAdmin(JSON.parse(localStorage.getItem('isAdmin')) || false);
+    setUser(JSON.parse(localStorage.getItem('user')) || null);
     setIsLoading(false);
   }, []);
   
@@ -44,16 +35,7 @@ function App() {
 
   return (
     <AuthContext.Provider value={{
-      isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')) || false,
-      setIsLoggedIn: (value) => {
-        localStorage.setItem('isLoggedIn', JSON.stringify(value));
-        setIsLoggedIn(value);
-      },
-      isAdmin: JSON.parse(localStorage.getItem('isAdmin')) || false,
-      setIsAdmin: (value) => {
-        localStorage.setItem('isAdmin', JSON.stringify(value));
-        setIsAdmin(value);
-      },
+      isLoggedIn, isAdmin, user, setIsLoggedIn, setIsAdmin, setUser
     }}>
     <Router>
       <div className="App">

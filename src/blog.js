@@ -158,9 +158,9 @@ const BlogPage = () => {
 
   return (
     <div className='min-h-screen flex flex-row bg-black text-white'>
-      <div className='w-1/5 bg-black text-white p-6'>
+      {/* <div className='w-1/5 bg-black text-white p-6'>
         <Button onClick={() => window.history.back()}>Back</Button>
-      </div>
+      </div> */}
       <div className="flex flex-col bg-black text-white p-6 w-full">
         <div className='flex flex-col items-center justify-center w-full'>
         <h1 className="text-4xl font-bold mb-6">{blog.title}</h1>
@@ -226,13 +226,7 @@ const BlogPage = () => {
             </button>
       </div>
       )}
-          <div className='container flex justify-between items-center'>
-    <button 
-      onClick={() => toggleReplyVisibility(comment.id)} 
-      className="bg-black text-gray-500 px-4 rounded mt-4"
-      >
-      {replyVisibility[comment.id] ? 'Hide Replies' : comment.replies.length>0 ? `Show ${comment.replies.length} Replies` : 'No Replies'}
-    </button>
+          <div className='container flex justify-end'>
           <button 
         className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-1 px-4 rounded hover:from-blue-600 hover:to-purple-600 transition-all duration-500 shadow-lg"
         type='submit'
@@ -241,6 +235,12 @@ const BlogPage = () => {
       </button>
       </div>
     </form>
+    <button 
+      onClick={() => toggleReplyVisibility(comment.id)} 
+      className="bg-black text-gray-500 px-4 rounded mt-4"
+      >
+      {replyVisibility[comment.id] ? 'Hide Replies' : comment.replies.length>0 ? `Show ${comment.replies.length} Replies` : 'No Replies'}
+    </button>
     {replyVisibility[comment.id] && comment.replies.map(reply => (
       <div className='container flex justify-end'>
       <div key={reply.id} className="border-b border-gray-400 p-2 mb-2 bg-gray-900 rounded h-auto w-4/5 items-center text-sm">

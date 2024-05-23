@@ -1,44 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { firestore, auth, storage } from './firebase';
 import Button from './components/button';
 import { v4 } from 'uuid';
+import { AuthContext } from './authContext';
 import ReactQuill from 'react-quill';
+import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 import './admin.css';
+
+// dotenv.config();
 
 const Create = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [owner, setOwner] = useState('');
   const [imageFile, setImageFile] = useState(null);
-  // const [url,setImageUrl]=useState('');
   const [isloading, setLoading] = useState(false);
+  const [isGenerating, setGenerating]=useState(false);
+  const {user}=useContext(AuthContext);
   const navigate = useNavigate();
-  const uid = auth.currentUser.uid;
 
+    const generateBlogContent = async () => {
 
-  useEffect(() => {
-    const fetchOwner = async () => {
-      try {
-        const docRef = doc(firestore, 'Users', uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setOwner(docSnap.data().name);
-        } else {
-          console.log('No such document!');
-        }
-      } catch (e) {
-        console.error('Error getting document: ', e);
+      if(!title){
+        alert("Please provide title!");
+        return;
       }
+      
+      setGenerating(true);
+      
+     const response = await axios({
+        url:'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDIdW5hOqYCE-PYIjj8jPBZoitd4zsm1j4',
+        method: 'POST',
+        data: {
+          contents: [
+            { parts:[{text:"Generate a nicely formatted blog on "+title}]},
+          ],
+        },
+      });
+      let content = response.data.candidates[0].content.parts[0].text;
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      content = content.replace(/(\*|-|\+) \*\*(.*?)\*\*/g, '$1 <strong>$2</strong>');
+      setGenerating(false);
+      setContent(content);
+     
     };
-    fetchOwner();
-  }
-    , [uid]);
-
-
+    
 
 
   const handleSubmit = async (e) => {
@@ -48,7 +58,7 @@ const Create = () => {
       const docRef = await addDoc(collection(firestore, 'Blogs'), {
         title,
         Content: content,
-        Owner: owner,
+        Owner: user.displayName,
         imageUrl: '', // Initially empty
         createdAt: new Date(),
       });
@@ -82,7 +92,7 @@ const Create = () => {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col overflow-hidden">
       <header className='justify-between items-center'>
-      <div className="w-full flex justify-start items-start p-4 mt-4">  <Button onClick={() => window.history.back()}>Back</Button>
+      <div className="w-full flex justify-start items-start p-4 mt-4">  {/*<Button onClick={() => window.history.back()}>Back</Button>*/}
       </div>
           <h2 className="text-3xl font-bold mb-6">Create New Blog</h2>
       </header>
@@ -123,6 +133,8 @@ const Create = () => {
               ]
             }}
             className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
+            style={{whiteSpace:'pre-wrap'}}
+            dangerouslySetInnerHTML={{ __html: content }}
           />
           <input
             type="file"
@@ -130,7 +142,12 @@ const Create = () => {
             placeholder="Image URL (optional)"
             className="w-full p-2 mb-4 rounded bg-white text-black"
           />
-          <Button type="submit" >{isloading ? "Creating..." : "Create Blog"}</Button>
+          <div className='justify-center items-center'>
+          <div className='container flex flex-row justify-center items-center'>
+          <Button type="submit" style={{marginRight:'10px'}}>{isloading ? "Creating..." : "Create Blog"}</Button>
+        <Button onClick={(event)=>{event.preventDefault();generateBlogContent();}}>{isGenerating? "Generating..." : "Generate Content"}</Button>
+        </div>
+        </div>
         </form>
       </div>
       </div>

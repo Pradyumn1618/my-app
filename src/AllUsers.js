@@ -25,10 +25,10 @@ const AllUsers = () => {
   }, []);
   return (
     <div className="min-h-screen flex flex-col bg-black text-white w-full px-4 py-8">
-      <header className="flex flex-row justify-between items-center">
-        <div className="w-1/5 bg-black text-white p-6">
+      <header className="flex flex-row justify-center items-center">
+        {/* <div className="w-1/5 bg-black text-white p-6">
           <Button onClick={() => window.history.back()}>Back</Button>
-        </div>
+        </div> */}
         <div className="w-full flex flex-col justify-center items-center">
           <h1 className="text-4xl text-center font-bold mb-4 font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent">
             Your Users

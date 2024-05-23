@@ -69,7 +69,7 @@ const Edit = () => {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <header className='justify-between items-center'>
-          <div className="w-full flex justify-start items-start p-4 mt-4">  <Button onClick={() => window.history.back()}>Back</Button>
+          <div className="w-full flex justify-start items-start p-4 mt-4">  
 </div>
       <h2 className="text-2xl font-bold mb-4">Edit Blog Post</h2>
       </header>
