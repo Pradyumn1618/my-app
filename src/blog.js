@@ -153,15 +153,14 @@ const BlogPage = () => {
     } catch (error) {
         console.error('Error adding comment:', error);
     }
-    // fetchComments(); // Refetch comments to include the new one
 };
 
   return (
-    <div className='min-h-screen flex flex-row bg-black text-white'>
+    <div className='min-h-screen flex flex-col items-center justify-center bg-black text-white'>
       {/* <div className='w-1/5 bg-black text-white p-6'>
         <Button onClick={() => window.history.back()}>Back</Button>
       </div> */}
-      <div className="flex flex-col bg-black text-white p-6 w-full">
+      <div className="flex flex-col bg-black text-white p-6 w-4/5">
         <div className='flex flex-col items-center justify-center w-full'>
         <h1 className="text-4xl font-bold mb-6">{blog.title}</h1>
         <img
