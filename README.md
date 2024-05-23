@@ -68,4 +68,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# my-app
+# BlogSite
+## Description
+
+This project is a blog website built using React, Tailwind CSS and Firebase. Users can read blogs created by admins of the site.
+
+This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)
+
+
