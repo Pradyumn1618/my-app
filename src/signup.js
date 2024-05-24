@@ -150,7 +150,7 @@ function SignupPage() {
               required
               className='p-2 mb-6 rounded bg-white text-black w-full'
             />
-            <button className='absolute right-0 bottom-2.5 text-black bg-white mb-6 mx-2 text-sm' onClick={handleVisibility}>{isVisible ? 'HIDE' : 'SHOW'}</button>
+            <button type="button" className='absolute right-0 bottom-2.5 text-black bg-white mb-6 mx-2 text-sm' onClick={handleVisibility}>{isVisible ? 'HIDE' : 'SHOW'}</button>
           </div>      <div className='flex flex-col justify-center items-center'>
             <Button className='w-full mb-6' type="submit">{subloading ? 'Signing Up...' : 'Sign Up'}</Button>
             <div className='text-left w-full'>
