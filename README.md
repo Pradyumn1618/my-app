@@ -69,16 +69,29 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 # BlogSite
+  
+## Description
+
+This project is a dynamic blog website developed using React, Tailwind CSS, and Firebase. It provides a platform where users can read engaging content created by site administrators. The site features a seamless user interface with responsive design elements, ensuring an optimal reading experience across various devices. Additionally, the blog leverages AI to assist admins in generating content, enhancing productivity and creativity.
+
+## Features
+
+### User Interaction:
+- Users can read blogs created by site admins.
+- Users can comment on blogs and reply to existing comments, fostering community engagement and discussion.
+
+### Admin Capabilities:
+- Admins can post new blogs, ensuring fresh content is regularly available.
+- Admins have the ability to edit and delete existing blogs, maintaining the quality and relevance of the content.
+- Blogs can be generated based on a given title using AI, aiding in content creation.
+
 ## Technologies Used
 
 - ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB)
 - ![Tailwind CSS](https://img.shields.io/badge/-Tailwind%20CSS-38B2AC?logo=tailwind-css&logoColor=white)
 - ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=white)
-  
-## Description
+- ![Gemini API](https://img.shields.io/badge/-Gemini_API-4285F4?logo=google&logoColor=white)
 
-This project is a blog website built using React, Tailwind CSS and Firebase. Users can read blogs created by admins of the site.
-
-This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)
-
+This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)\
+**Note: By default, users are assigned non-admin roles upon logging in, granting them access to user-only features.**
 
