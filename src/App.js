@@ -40,16 +40,16 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPage /> : <Navigate to="/login" replace />} />
-        <Route path="/user" element={isLoggedIn && !isAdmin ? <UserPage /> : isLoggedIn && isAdmin ? <AdminPage /> : <Navigate to="/login" replace />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/blog/:id" element={isLoggedIn ? <BlogPage />: <Navigate to="/login" replace />} />
-        <Route path="/createBlog" element={isLoggedIn && isAdmin ? <Create/>  : <Navigate to="/login" replace />}/>
-        <Route path="/editBlog" element={isLoggedIn && isAdmin ? <EditBlog/>  : <Navigate to="/login" replace />}/>
-        <Route path="/edit/:id" element={isLoggedIn&&isAdmin ? <Edit/>:<Navigate to="/login" replace/>}/>
-        <Route path="/AllUsers" element={isLoggedIn&&isAdmin? <AllUsers/>:<Navigate to="/login" replace/>}/>
+        <Route path="/" element={isLoggedIn ? <Navigate to="/user" replace/> : <Home/>} />
+        <Route path="/user" element={isLoggedIn && isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/" replace/>} />
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/user" replace/>:<LoginPage />} />
+        <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPage /> : <Navigate to="/" replace />} />
+        <Route path="/signup" element={isLoggedIn ? <Navigate to="/user" replace/>:<SignupPage />} />
+        <Route path="/blog/:id" element={isLoggedIn ? <BlogPage />: <Navigate to="/" replace />} />
+        <Route path="/createBlog" element={isLoggedIn && isAdmin ? <Create/>  : <Navigate to="/" replace />}/>
+        <Route path="/editBlog" element={isLoggedIn && isAdmin ? <EditBlog/>  : <Navigate to="/" replace />}/>
+        <Route path="/edit/:id" element={isLoggedIn&&isAdmin ? <Edit/>:<Navigate to="/" replace/>}/>
+        <Route path="/AllUsers" element={isLoggedIn&&isAdmin? <AllUsers/>:<Navigate to="/" replace/>}/>
         </Routes>
       </div>
     </Router>
