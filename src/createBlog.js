@@ -62,6 +62,11 @@ const Create = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!content){
+      window.alert("Please provide content!");
+      return;
+    }
+    if(isGenerating)return;
     try {
       setLoading(true);
       const docRef = await addDoc(collection(firestore, 'Blogs'), {
@@ -150,8 +155,8 @@ const Create = () => {
           />
           <div className='justify-center items-center'>
             <div className='container flex flex-row justify-center items-center'>
-              <Button type="submit" style={{ marginRight: '10px' }}>{isloading ? "Creating..." : "Create Blog"}</Button>
-              <Button onClick={(event) => { event.preventDefault(); generateBlogContent(); }}>{isGenerating ? "Generating..." : "Generate Content"}</Button>
+              <Button type="submit" style={{ marginRight: '10px' }} disabled={isloading}>{isloading ? "Creating..." : "Create Blog"}</Button>
+              <Button onClick={(event) => { event.preventDefault(); generateBlogContent(); }} disabled={isGenerating}>{isGenerating ? "Generating..." : "Generate Content"}</Button>
             </div>
           </div>
         </form>
