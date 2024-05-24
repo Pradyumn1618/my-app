@@ -93,5 +93,5 @@ This project is a dynamic blog website developed using React, Tailwind CSS, and 
 - ![Gemini API](https://img.shields.io/badge/-Gemini_API-4285F4?logo=google&logoColor=white)
 
 This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)\
-**Note: By default, users are assigned non-admin roles upon logging in, granting them access to user-only features.
+**Note: By default, users are assigned non-admin roles upon logging in, granting them access to user-only features.**
 
