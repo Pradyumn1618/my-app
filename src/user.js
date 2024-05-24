@@ -5,6 +5,14 @@ import { firestore, auth } from './firebase';
 import { signOut } from 'firebase/auth';
 import { AuthContext } from './authContext';
 import './App.css';
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos'; // Import AOS library
+
+// Initialize AOS (optional, can be placed in a global configuration file)
+AOS.init({
+  duration: 800,
+});
+
 
 const UserPage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -184,7 +192,7 @@ const UserPage = () => {
         <div className='grid md:grid-cols-2 gap-6 sm:w-2/3 md:w-2/3 lg:w-2/3'>
           {filteredBlogs.map(blog => (
             <div key={blog.id} className="bg-gray text-white rounded-lg shadow-md overflow-hidden blog-card mx-auto w-full" style={{ boxShadow: '0 4px 6px rgba(255, 255,255,0.5)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}
-            >
+            data-aos="fade-up">
               <Link to={`/blog/${blog.id}`}>
                 <img
                   src={blog.imageUrl || 'https://www.patterns.dev/img/reactjs/react-logo@3x.svg'}
