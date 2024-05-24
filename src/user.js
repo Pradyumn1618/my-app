@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDoc, doc,onSnapshot } from 'firebase/firestore';
+import { collection, getDoc, doc, onSnapshot } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import { signOut } from 'firebase/auth';
 import { AuthContext } from './authContext';
@@ -17,10 +17,8 @@ const UserPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    
-      setUser(JSON.parse(localStorage.getItem('user')));
-      setIsLoading(false);
-    
+
+    setUser(JSON.parse(localStorage.getItem('user')));
   }, []);
 
   useEffect(() => {
@@ -30,7 +28,6 @@ const UserPage = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -49,16 +46,14 @@ const UserPage = () => {
 
   useEffect(() => {
     const fetchName = async () => {
-      const user = await auth.currentUser;
       if (user) {
-        // const docRef=doc(collection, 'Users', user.uid);
         const docSnap = await getDoc(doc(firestore, 'Users', user.uid));
         setName(docSnap.data().name);
       }
     };
 
     fetchName();
-  }, []);
+  }, [user]);
 
 
   const navigate = useNavigate();
@@ -71,13 +66,14 @@ const UserPage = () => {
         blogsData.sort(function (a, b) {
           return b.createdAt.toDate() - a.createdAt.toDate();
         })
+        setIsLoading(false);
         setBlogs(blogsData);
         setFilteredBlogs(blogsData);
       });
     };
-  
+
     fetchBlogs();
-  
+
   }, []);
 
   const handleSearchChange = (e) => {
@@ -104,6 +100,7 @@ const UserPage = () => {
   const handleLogout = () => {
     setSidebarOpen(false);
     setIsLoggedIn(false);
+    setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('isAdmin');
@@ -118,14 +115,13 @@ const UserPage = () => {
   return (
     <div className='min-h-screen bg-black text-white overflow-hidden flex flex-col'>
       <header className="bg-black text-white shadow-md w-full px-6 py-4 fixed justify-center items-center">
-        {/* <div className="container mx-auto px-6 py-4 flex justify-between items-center"> */}
         <div className='flex items-center justify-between'>
           <div className='hidden sm:flex md:flex lg:flex'>
             <button onClick={toggleSidebar} className="bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
               Profile
             </button>
           </div>
-          
+
           <div className='w-1/2 hidden sm:flex md:flex lg:flex'>
             <input
               type="text"
@@ -135,31 +131,27 @@ const UserPage = () => {
               className={`px-4 py-2 rounded text-black w-1/2`}
             />
 
-            </div>
-            <div className='flex sm:hidden md:hidden lg:hidden'>
+          </div>
+          <div className='flex sm:hidden md:hidden lg:hidden'>
             <div>
-            <button onClick={toggleSidebar} className="bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
-              Profile
-            </button>
-          </div>
-          
-          <div className='w-1/2'>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search blogs..."
-              className='px-4 py-2 rounded text-black w-1/2'
-            />
+              <button onClick={toggleSidebar} className="bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
+                Profile
+              </button>
             </div>
 
+            <div className='w-1/2'>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search blogs..."
+                className='px-4 py-2 rounded text-black w-1/2'
+              />
             </div>
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent text-center">BlogSite
+
           </div>
-
-
-          {/* </div> */}
-
+          <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent text-center">BlogSite
+          </div>
         </div>
       </header>
       <hr className='solid border-purple-500'></hr>
@@ -205,10 +197,10 @@ const UserPage = () => {
                   <div className="text-gray-500 text-left font-medium mb-2">{blog.Owner}</div>
                   <h3 className="text-2xl font-bold text-white">{blog.title}</h3>
                 </div>
-                <p 
-  className="text-gray-700 text-base leading-relaxed mb-4" 
-  dangerouslySetInnerHTML={{ __html: blog.Content.substring(0, 100) + '...' }}
-/>                <Link to={`/blog/${blog.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
+                <p
+                  className="text-gray-700 text-base leading-relaxed mb-4"
+                  dangerouslySetInnerHTML={{ __html: blog.Content.substring(0, 100) + '...' }}
+                />                <Link to={`/blog/${blog.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
                   Read More
                   <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns
                     ="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>

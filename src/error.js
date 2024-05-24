@@ -7,9 +7,8 @@ const ErrorPopup = ({ message, onClose }) => {
     const timer = setTimeout(() => {
       setIsVisible(false);
       onClose();
-    }, 3000); // Change this to control the duration
-
-    return () => clearTimeout(timer); // This will clear the timer when the component unmounts
+    }, 2000);
+    return () => clearTimeout(timer);
   }, [onClose]);
 
   if (!isVisible) {

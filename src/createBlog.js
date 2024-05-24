@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
-import { firestore, auth, storage } from './firebase';
+import { firestore, storage } from './firebase';
 import Button from './components/button';
 import { v4 } from 'uuid';
 import { AuthContext } from './authContext';
@@ -11,44 +11,53 @@ import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 import './admin.css';
 
-// dotenv.config();
-
 const Create = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [isloading, setLoading] = useState(false);
-  const [isGenerating, setGenerating]=useState(false);
-  const {user}=useContext(AuthContext);
+  const [isGenerating, setGenerating] = useState(false);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const apikey = process.env.REACT_APP_GEMINI_API_KEY;
 
-    const generateBlogContent = async () => {
+  const generateBlogContent = async () => {
 
-      if(!title){
-        alert("Please provide title!");
-        return;
-      }
-      
-      setGenerating(true);
-      
-     const response = await axios({
-        url:'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDIdW5hOqYCE-PYIjj8jPBZoitd4zsm1j4',
-        method: 'POST',
-        data: {
-          contents: [
-            { parts:[{text:"Generate a nicely formatted blog on "+title}]},
-          ],
-        },
-      });
-      let content = response.data.candidates[0].content.parts[0].text;
-      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      content = content.replace(/(\*|-|\+) \*\*(.*?)\*\*/g, '$1 <strong>$2</strong>');
-      setGenerating(false);
-      setContent(content);
-     
-    };
-    
+    if (!title) {
+      alert("Please provide title!");
+      return;
+    }
+
+    setGenerating(true);
+
+    try{
+    const response = await axios({
+      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apikey,
+      method: 'POST',
+      data: {
+        contents: [
+          { parts: [{ text: "Generate a nicely formatted blog in HTML on " + title }] },
+        ],
+      },
+    });
+    setGenerating(false);
+    if(response.data.candidates.length > 0){
+    console.log(response.data.candidates[0].content.parts[0].text);
+    let content = response.data.candidates[0].content.parts[0].text;
+  
+    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    setContent(content);
+    }
+  }catch (e) {
+    setContent(e);
+    console.error('Error generating blog content: ', e);
+    setGenerating(false);
+  }
+    // setContent(content);
+
+  };
+
 
 
   const handleSubmit = async (e) => {
@@ -59,19 +68,17 @@ const Create = () => {
         title,
         Content: content,
         Owner: user.displayName,
-        imageUrl: '', // Initially empty
+        imageUrl: '',
         createdAt: new Date(),
       });
 
       console.log('Document written with ID: ', docRef.id);
 
-      // Step 2: If there's an image, upload it and get the URL
       if (imageFile !== null) {
         const storageRef = ref(storage, `blogs/${imageFile.name + v4()}`);
-        await uploadBytes(storageRef, imageFile); // Wait for upload to complete
-        const url = await getDownloadURL(storageRef); // Get the URL after upload
+        await uploadBytes(storageRef, imageFile);
+        const url = await getDownloadURL(storageRef);
 
-        // Step 3: Update the document with the imageUrl
         await updateDoc(doc(firestore, 'Blogs', docRef.id), {
           imageUrl: url,
         });
@@ -82,8 +89,7 @@ const Create = () => {
 
 
       setLoading(false);
-      // console.log('Document written with ID: ', docRef.id);
-      navigate('/admin'); // Redirect to user page after submission
+      navigate('/admin');
     } catch (e) {
       console.error('Error adding document: ', e);
     }
@@ -92,9 +98,9 @@ const Create = () => {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col overflow-hidden">
       <header className='justify-between items-center'>
-      <div className="w-full flex justify-start items-start p-4 mt-4">  {/*<Button onClick={() => window.history.back()}>Back</Button>*/}
-      </div>
-          <h2 className="text-3xl font-bold mb-6">Create New Blog</h2>
+        <div className="w-full flex justify-start items-start p-4 mt-4">
+        </div>
+        <h2 className="text-3xl font-bold mb-6">Create New Blog</h2>
       </header>
       <div className="bg-black flex justify-center mt-0">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-auto w-full mx-8">
         <form onSubmit={handleSubmit} className="bg-black text-white sm:p-8 md:p-8 lg:p-8 rounded-lg shadow-lg w-full ">
@@ -133,7 +139,7 @@ const Create = () => {
               ]
             }}
             className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
-            style={{whiteSpace:'pre-wrap'}}
+            style={{ whiteSpace: 'pre-wrap' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
           <input
@@ -143,11 +149,11 @@ const Create = () => {
             className="w-full p-2 mb-4 rounded bg-white text-black"
           />
           <div className='justify-center items-center'>
-          <div className='container flex flex-row justify-center items-center'>
-          <Button type="submit" style={{marginRight:'10px'}}>{isloading ? "Creating..." : "Create Blog"}</Button>
-        <Button onClick={(event)=>{event.preventDefault();generateBlogContent();}}>{isGenerating? "Generating..." : "Generate Content"}</Button>
-        </div>
-        </div>
+            <div className='container flex flex-row justify-center items-center'>
+              <Button type="submit" style={{ marginRight: '10px' }}>{isloading ? "Creating..." : "Create Blog"}</Button>
+              <Button onClick={(event) => { event.preventDefault(); generateBlogContent(); }}>{isGenerating ? "Generating..." : "Generate Content"}</Button>
+            </div>
+          </div>
         </form>
       </div>
       </div>
