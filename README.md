@@ -92,7 +92,6 @@ This project is a dynamic blog website developed using React, Tailwind CSS, and 
 - ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=white)
 - ![Gemini API](https://img.shields.io/badge/-Gemini_API-4285F4?logo=google&logoColor=white)
 
-This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)
-**Note: Logged in users are set to non-admin as default. So you will be able to see user side only.
-
+This site is hosted here: [https://Pradyumn1618.github.io/my-app](https://Pradyumn1618.github.io/my-app)\
+**Note: By default, users are assigned non-admin roles upon logging in, granting them access to user-only features.
 
