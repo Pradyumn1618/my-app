@@ -95,7 +95,6 @@ function LoginPage() {
         console.log(error);
         setErrorMsg(error.message);
         setShowErrorPopup(true);
-        // Handle other errors
       }
       setShowErrorPopup(true);
     }

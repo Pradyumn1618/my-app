@@ -85,10 +85,6 @@ function SignupPage() {
         setErrorMsg('Invalid Email');
         setShowErrorPopup(true);
       }
-      else if(error.code === 'auth/weak-password') {
-        setErrorMsg('Weak Password');
-        setShowErrorPopup(true);
-      }
       else{
         setErrorMsg(error.message);
         setShowErrorPopup(true);
@@ -121,19 +117,22 @@ function SignupPage() {
         }
         )
           .catch((error) => {
-            setErrorMsg('Unexpected Error Occured')
+            setErrorMsg(error.message);
+            setShowErrorPopup(true);
             console.error(error);
           });
         console.log('User signed in');
       }
       ).catch((error) => {
-        setErrorMsg('Unexpected Error Occured')
+        setErrorMsg(error.message);
+        setShowErrorPopup(true);
         console.error(error);
       });
 
     }
     catch (error) {
-      setErrorMsg('Unexpected Error Occured')
+      setErrorMsg(error.message);
+      setShowErrorPopup(true);
       console.error(error);
     }
   }
