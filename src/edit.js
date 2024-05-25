@@ -4,6 +4,7 @@ import { firestore } from './firebase';
 import { getDoc, setDoc, doc } from 'firebase/firestore';
 import Button from './components/button';
 import { useNavigate } from 'react-router-dom';
+import ErrorPopup from './error';
 import Popup from './popup';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -15,9 +16,11 @@ const Edit = () => {
   const [blog, setBlog] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [subloading, setSubLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setErrorMsg] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const nav = useNavigate();
 
 
@@ -28,7 +31,8 @@ const Edit = () => {
         const docRef = await getDoc(doc(firestore, 'Blogs', id));
         setBlog(docRef.data());
       } catch (error) {
-        setError(error);
+        setErrorMsg(error.message);
+        setShowErrorPopup(true);
       } finally {
         setIsLoading(false);
       }
@@ -36,6 +40,10 @@ const Edit = () => {
 
     fetchData();
   }, [id]);
+
+  const handleClose = () => {
+    setShowErrorPopup(false);
+  };
 
   const handleChange = (event) => {
     setBlog({ ...blog, [event.target.name]: event.target.value });
@@ -62,9 +70,9 @@ const Edit = () => {
     }
     catch (error) {
       setSubLoading(false);
-      setError(error);
+      setErrorMsg(error.message);
+      setShowErrorPopup(true);
     }
-    // ... handle success or failure of submission
   };
 
   return (
@@ -75,7 +83,7 @@ const Edit = () => {
         <h2 className="text-2xl font-bold mb-4">Edit Blog Post</h2>
       </header>
       {isLoading && <p>Loading blog data...</p>}
-      {error && <p className="text-red-500">Error: {error.message}</p>}
+      {showErrorPopup && <ErrorPopup message={errorMsg} onClose={handleClose} />}
       {blog && (
         <div className="flex justify-center">  <div className="p-8 flex flex-col justify-center items-center bg-black text-white shadow hover:shadow-purple-500 h-auto w-full mx-8">
           <form onSubmit={handleSubmit} className="bg-black text-white p-8 rounded-lg shadow-lg w-full">

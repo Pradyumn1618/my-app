@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc, collection, addDoc, onSnapshot, getDocs } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import Button from './components/button';
+import ErrorPopup from './error';
 import './App.css';
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos'; // Import AOS library
@@ -23,6 +24,8 @@ const BlogPage = () => {
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState({});
   const [replyVisibility, setReplyVisibility] = useState({});
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
 
   const user = auth.currentUser;
@@ -81,6 +84,8 @@ const BlogPage = () => {
       if (docSnap.exists()) {
         setBlog(docSnap.data());
       } else {
+        setErrorMsg('No such document!');
+        setShowErrorPopup(true);
         console.log('No such document!');
       }
     };
@@ -89,6 +94,10 @@ const BlogPage = () => {
   }, [id]);
 
   if (!blog) return <div className="text-center text-white bg-black h-screen w-full">Loading...</div>;
+
+  const handleClose = () => {
+    setShowErrorPopup(false);
+  };
 
   const toggleReplyInput = (commentId) => {
     setShowReplyInput({
@@ -125,6 +134,8 @@ const BlogPage = () => {
           [commentId]: false,
         });
       } catch (error) {
+        setErrorMsg('Error adding reply');
+        setShowErrorPopup(true);
         console.error('Error adding reply:', error);
       }
     }
@@ -153,12 +164,17 @@ const BlogPage = () => {
       setLoading(false);
 
     } catch (error) {
+      setLoading(false);
+      setErrorMsg('Error adding comment');
+      setShowErrorPopup(true);
       console.error('Error adding comment:', error);
     }
   };
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-black text-white' >
+      {showErrorPopup && <ErrorPopup message={errorMsg} onClose={handleClose} />}
+
       <div className="flex flex-col bg-black text-white p-6 sm:w-4/5 md:w-4/5 lg:w-4/5">
         <div className='flex flex-col items-center justify-center w-full'>
           <h1 className="text-4xl font-bold mb-6">{blog.title}</h1>

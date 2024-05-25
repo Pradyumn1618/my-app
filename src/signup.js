@@ -81,7 +81,19 @@ function SignupPage() {
         setErrorMsg('Email already in use');
         setShowErrorPopup(true);
       }
-      console.error(error);
+      else if(error.code === 'auth/invalid-email') {
+        setErrorMsg('Invalid Email');
+        setShowErrorPopup(true);
+      }
+      else if(error.code === 'auth/weak-password') {
+        setErrorMsg('Weak Password');
+        setShowErrorPopup(true);
+      }
+      else{
+        setErrorMsg(error.message);
+        setShowErrorPopup(true);
+        console.error(error);
+      }
     }
   };
 

@@ -8,6 +8,7 @@ import { v4 } from 'uuid';
 import { AuthContext } from './authContext';
 import ReactQuill from 'react-quill';
 import axios from 'axios';
+import ErrorPopup from './error';
 import 'react-quill/dist/quill.snow.css';
 import './admin.css';
 
@@ -17,9 +18,16 @@ const Create = () => {
   const [imageFile, setImageFile] = useState(null);
   const [isloading, setLoading] = useState(false);
   const [isGenerating, setGenerating] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const apikey = process.env.REACT_APP_GEMINI_API_KEY;
+
+  const handleClose = () => {
+    setShowErrorPopup(false);
+  };
+
 
   const generateBlogContent = async () => {
 
@@ -50,11 +58,11 @@ const Create = () => {
     setContent(content);
     }
   }catch (e) {
-    setContent(e);
     console.error('Error generating blog content: ', e);
     setGenerating(false);
+    setErrorMsg('Error generating blog content. Please try again later.');
+    setShowErrorPopup(true);
   }
-    // setContent(content);
 
   };
 
@@ -95,12 +103,16 @@ const Create = () => {
       setLoading(false);
       navigate('/admin');
     } catch (e) {
+      setLoading(false);
+      setErrorMsg('Error creating blog. Please try again later.');
+      setShowErrorPopup(true);
       console.error('Error adding document: ', e);
     }
   };
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col overflow-hidden">
+      {showErrorPopup && <ErrorPopup message={errorMsg} onClose={handleClose} />}
       <header className='justify-between items-center'>
         <div className="w-full flex justify-start items-start p-4 mt-4">
         </div>

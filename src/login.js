@@ -93,7 +93,8 @@ function LoginPage() {
         // Handle invalid user error
       } else {
         console.log(error);
-        setErrorMsg('An error occurred');
+        setErrorMsg(error.message);
+        setShowErrorPopup(true);
         // Handle other errors
       }
       setShowErrorPopup(true);
@@ -135,7 +136,7 @@ function LoginPage() {
 
     } catch (error) {
       console.error("Error signing in with Google", error);
-      setErrorMsg('An error occurred');
+      setErrorMsg(error.message);
       setShowErrorPopup(true);
     }
   };
