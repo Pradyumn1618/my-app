@@ -48,6 +48,11 @@ function LoginPage() {
       setSubLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password, { persistence: browserSessionPersistence });
       const user = userCredential.user;
+      if(user.emailVerified === false) {
+        setSubLoading(false);
+        alert('Please verify your email first');
+        return;
+      }
       const docRef = doc(firestore, 'Users', user.uid);
       const docSnap = await getDoc(docRef);
 

@@ -122,7 +122,7 @@ const UserPage = () => {
 
   return (
     <div className='min-h-screen bg-black text-white overflow-hidden flex flex-col'>
-      <header className="bg-black text-white shadow-md w-full px-6 py-4 fixed justify-center items-center">
+      <header className="bg-black text-white shadow-md w-full px-6 py-4 z-10 fixed justify-center items-center">
         <div className='flex items-center justify-between'>
           <div className='hidden sm:flex md:flex lg:flex'>
             <button onClick={toggleSidebar} className="bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">

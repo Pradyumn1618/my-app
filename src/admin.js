@@ -132,7 +132,7 @@ const AdminPage = () => {
 
   return (
     <div className='min-h-screen bg-black text-white overflow-hidden flex flex-col'>
-      <header className="bg-black text-white shadow-md w-full px-6 py-4 fixed justify-center items-center">
+      <header className="bg-black text-white shadow-md w-full px-6 py-4 z-10 fixed justify-center items-center">
         <div className='flex items-center justify-between'>
           <div className='hidden sm:flex md:flex lg:flex'>
             <button onClick={toggleSidebar} className="bg-white text-black px-4 py-2 rounded hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500">
@@ -228,7 +228,7 @@ const AdminPage = () => {
       </div>
 
       <div className={`${sidebarOpen ? 'md:ml-40 lg:ml-40' : ''} transition-margin duration-300 ease-in-out w-full flex flex-col items-center justify-center mt-24 px-4 ${sidebarOpen ? 'sm:bg-transparent bg-black bg-opacity-50' : ''} `}>
-        <div className='grid md:grid-cols-2 gap-6 w-2/3'>
+        <div className='grid md:grid-cols-2 gap-6 sm:w-2/3 md:w-2/3 lg:w-2/3'>
           {filteredBlogs.map(blog => (
             <div key={blog.id} className="bg-gray text-white rounded-lg shadow-md overflow-hidden blog-card mx-auto w-full items-center justify-center" style={{ boxShadow: '0 4px 6px rgba(255, 255,255,0.5)', hover: { boxShadow: '0 8px 10px rgba(255,255,255,1)' } }}
             data-aos="fade-up">

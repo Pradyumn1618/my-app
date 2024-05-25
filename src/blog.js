@@ -7,7 +7,6 @@ import './App.css';
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos'; // Import AOS library
 
-// Initialize AOS (optional, can be placed in a global configuration file)
 AOS.init({
   duration: 800,
 });

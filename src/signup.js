@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile,sendEmailVerification } from "firebase/auth";
 import { auth, firestore, provider } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
@@ -31,7 +31,6 @@ function SignupPage() {
     setShowErrorPopup(false);
   };
 
-
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -50,8 +49,11 @@ function SignupPage() {
       setSubLoading(true);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       setSubLoading(false);
-      // The user is signed in.
       const user = userCredential.user;
+      await sendEmailVerification(user).then(() => {
+        console.log('Email verification sent');
+        alert('Email Verification Sent');
+      });
       await updateProfile(user, {
         displayName: name
       });

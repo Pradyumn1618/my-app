@@ -49,7 +49,8 @@ const Edit = () => {
     event.preventDefault();
     try {
       setSubLoading(true);
-      await setDoc(doc(firestore, 'Blogs', id), blog);
+      const updatedBlog = {...blog, createdAt: new Date()};
+      await setDoc(doc(firestore, 'Blogs', id), updatedBlog);
       setSubLoading(false);
       setPopupMessage('Blog updated successfully!');
       setIsPopupOpen(true);

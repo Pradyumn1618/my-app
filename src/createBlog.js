@@ -58,8 +58,6 @@ const Create = () => {
 
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(!content){
@@ -73,6 +71,7 @@ const Create = () => {
         title,
         Content: content,
         Owner: user.displayName,
+        email: user.email,
         imageUrl: '',
         createdAt: new Date(),
       });
@@ -144,7 +143,7 @@ const Create = () => {
               ]
             }}
             className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
-            style={{ whiteSpace: 'pre-wrap' }}
+            // style={{ whiteSpace: 'pre-wrap' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
           <input

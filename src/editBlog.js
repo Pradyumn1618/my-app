@@ -13,8 +13,7 @@ const EditBlog = () => {
 
   useEffect(() => {
     const fetchBlogs = () => {
-      const userId = user.displayName; 
-      const blogsQuery = query(collection(firestore, 'Blogs'), where('Owner', '==', userId));
+      const blogsQuery = query(collection(firestore, 'Blogs'), where('email', '==', user.email));
       const unsubscribe = onSnapshot(blogsQuery, (snapshot) => {
         const fetchedBlogs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         fetchedBlogs.sort((a,b)=>b.createdAt.toDate()-a.createdAt.toDate());
@@ -25,7 +24,7 @@ const EditBlog = () => {
     };
 
     fetchBlogs();
-  }, [user.displayName]);
+  }, [user.email]);
 
   const handleDelete = async (blogId) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
