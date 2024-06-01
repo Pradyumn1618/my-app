@@ -19,6 +19,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-black text-white" data-aos="zoom-out">
       {/* Header */}
+      {/* <div className='background-image'></div> */}
       <header className="bg-black text-white shadow-md">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 bg-clip-text text-transparent">BlogSite</h1>
@@ -43,6 +44,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+      
 
       {/* <div className='separator'></div> */}
       {/* Featured Posts */}

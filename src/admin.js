@@ -83,6 +83,7 @@ const AdminPage = () => {
 
   }, []);
 
+  
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -96,7 +97,8 @@ const AdminPage = () => {
       const filtered = blogs.filter(blog =>
         blog.title.toLowerCase().includes(query.toLowerCase()) ||
         blog.Content.toLowerCase().includes(query.toLowerCase()) ||
-        blog.Owner.toLowerCase().includes(query.toLowerCase())
+        blog.Owner.toLowerCase().includes(query.toLowerCase())||
+        blog.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
       );
       setFilteredBlogs(filtered);
     }

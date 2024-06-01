@@ -38,41 +38,70 @@ const Create = () => {
 
     setGenerating(true);
 
-    try{
-    const response = await axios({
-      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apikey,
-      method: 'POST',
-      data: {
-        contents: [
-          { parts: [{ text: "Generate a nicely formatted blog in HTML on " + title }] },
-        ],
-      },
-    });
-    setGenerating(false);
-    if(response.data.candidates.length > 0){
-    console.log(response.data.candidates[0].content.parts[0].text);
-    let content = response.data.candidates[0].content.parts[0].text;
-  
-    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    setContent(content);
+    try {
+      const response = await axios({
+        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apikey,
+        method: 'POST',
+        data: {
+          contents: [
+            { parts: [{ text: "Generate a nicely formatted blog in HTML on topic " + title + ". Be professional and creative. Give a nice title to the blog but don't put title inside header tag of html document. Blog should be of atleast 500 words." }] },
+          ],
+        },
+      });
+      setGenerating(false);
+      if (response.data.candidates.length > 0) {
+        console.log(response.data.candidates[0].content.parts[0].text);
+        let content = response.data.candidates[0].content.parts[0].text;
+
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        setContent(content);
+      }
+    } catch (e) {
+      console.error('Error generating blog content: ', e);
+      setGenerating(false);
+      setErrorMsg('Error generating blog content. Please try again later.');
+      setShowErrorPopup(true);
     }
-  }catch (e) {
-    console.error('Error generating blog content: ', e);
-    setGenerating(false);
-    setErrorMsg('Error generating blog content. Please try again later.');
-    setShowErrorPopup(true);
-  }
 
   };
 
+  const generateTags = async (id) => {
+
+    try {
+      const response = await axios({
+        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apikey,
+        method: 'POST',
+        data: {
+          contents: [
+            { parts: [{ text: "Generate an array of category tags for the blog " + content }] },
+          ],
+        },
+      });
+      const tags = response.data.candidates[0].content.parts[0].text.split('\n');
+
+      const filteredTags = tags.filter(tag => tag.trim() !== '');
+      const filteredTagsWithoutBrackets = filteredTags.map(tag => tag.trim().replace(/[-"*&$#%]/g, ""));
+      await updateDoc(doc(firestore, 'Blogs', id), {
+        tags: filteredTagsWithoutBrackets,
+      })
+
+      console.log(filteredTags);
+
+    } catch (e) {
+      setErrorMsg(e.message);
+
+    }
+
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!content){
+    if (!content) {
       window.alert("Please provide content!");
       return;
     }
-    if(isGenerating)return;
+    if (isGenerating) return;
     try {
       setLoading(true);
       const docRef = await addDoc(collection(firestore, 'Blogs'), {
@@ -98,14 +127,16 @@ const Create = () => {
         console.log('Image URL updated: ', url);
       }
 
-
-
       setLoading(false);
       navigate('/admin');
+      generateTags(docRef.id);
+
+
     } catch (e) {
       setLoading(false);
       setErrorMsg('Error creating blog. Please try again later.');
       setShowErrorPopup(true);
+      navigate("/admin");
       console.error('Error adding document: ', e);
     }
   };
@@ -166,7 +197,7 @@ const Create = () => {
           />
           <div className='justify-center items-center'>
             <div className='container flex flex-row justify-center items-center'>
-              <Button type="submit" style={{ marginRight: '10px' }} disabled={isloading}>{isloading ? "Creating..." : "Create Blog"}</Button>
+              <Button type="submit" style={{ marginRight: '10px' }} disabled={isloading || isGenerating}>{isloading ? "Creating..." : "Create Blog"}</Button>
               <Button onClick={(event) => { event.preventDefault(); generateBlogContent(); }} disabled={isGenerating}>{isGenerating ? "Generating..." : "Generate Content"}</Button>
             </div>
           </div>

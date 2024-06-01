@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import { signOut } from 'firebase/auth';
 import { AuthContext } from './authContext';
@@ -20,7 +20,7 @@ const UserPage = () => {
   const [user, setUser] = useState(null);
   const [loading, setIsLoading] = useState(true); // Add loading state
   const { setIsLoggedIn } = React.useContext(AuthContext);
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState(blogs);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -43,7 +43,7 @@ const UserPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await auth.currentUser;
+      const user = auth.currentUser;
       if (user) {
         setUser(user);
       }
@@ -51,17 +51,6 @@ const UserPage = () => {
 
     fetchUser();
   }, []);
-
-  useEffect(() => {
-    const fetchName = async () => {
-      if (user) {
-        const docSnap = await getDoc(doc(firestore, 'Users', user.uid));
-        setName(docSnap.data().name);
-      }
-    };
-
-    fetchName();
-  }, [user]);
 
 
   const navigate = useNavigate();
@@ -78,11 +67,13 @@ const UserPage = () => {
         setBlogs(blogsData);
         setFilteredBlogs(blogsData);
       });
+      
     };
 
     fetchBlogs();
 
   }, []);
+
 
   const handleSearchChange = (e) => {
     const query = e.target.value;

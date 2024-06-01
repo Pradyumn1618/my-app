@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { firestore } from './firebase';
-import { getDoc, setDoc, doc } from 'firebase/firestore';
+import { firestore, storage } from './firebase';
+import { getDoc, setDoc, doc, updateDoc} from 'firebase/firestore';
+import { ref,uploadBytes, getDownloadURL} from 'firebase/storage';
 import Button from './components/button';
 import { useNavigate } from 'react-router-dom';
 import ErrorPopup from './error';
+import { v4 } from 'uuid';
 import Popup from './popup';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -16,11 +18,11 @@ const Edit = () => {
   const [blog, setBlog] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [subloading, setSubLoading] = useState(false);
-  // const [error, setErrorMsg] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const nav = useNavigate();
 
 
@@ -58,7 +60,19 @@ const Edit = () => {
     try {
       setSubLoading(true);
       const updatedBlog = {...blog, createdAt: new Date()};
+      // const docRef = await getDoc(doc(firestore, 'Blogs', id));
       await setDoc(doc(firestore, 'Blogs', id), updatedBlog);
+      if (imageFile !== null) {
+        const storageRef = ref(storage, `blogs/${imageFile.name + v4()}`);
+        await uploadBytes(storageRef, imageFile);
+        const url = await getDownloadURL(storageRef);
+
+        await updateDoc(doc(firestore, 'Blogs', id), {
+          imageUrl: url,
+        });
+
+        console.log('Image URL updated: ', url);
+      }
       setSubLoading(false);
       setPopupMessage('Blog updated successfully!');
       setIsPopupOpen(true);
@@ -135,6 +149,12 @@ const Edit = () => {
                 }}
                 className="w-full p-2 mb-6 rounded bg-white text-black h-60vh overflow-scroll"
               />
+              <input
+            type="file"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            placeholder="Image URL (optional)"
+            className="w-full p-2 mb-4 rounded bg-white text-black"
+          />
             </div>
             <Button
               type="submit"

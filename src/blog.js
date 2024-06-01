@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, collection, addDoc, onSnapshot, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, onSnapshot, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { firestore, auth } from './firebase';
 import Button from './components/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import ErrorPopup from './error';
 import './App.css';
 import 'aos/dist/aos.css'; // Import AOS styles
@@ -26,9 +28,11 @@ const BlogPage = () => {
   const [replyVisibility, setReplyVisibility] = useState({});
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentText, setEditingCommentText] = useState('');
 
 
-  const user = auth.currentUser;
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const fetchComments = () => {
@@ -122,7 +126,7 @@ const BlogPage = () => {
       const newReply = {
         User: auth.currentUser.displayName,
         comment: replyText,
-        createdAt: new Date(), 
+        createdAt: new Date(),
       };
       try {
         await addDoc(collection(firestore, 'Blogs', id, 'Comments', commentId, 'Replies'), newReply);
@@ -153,6 +157,7 @@ const BlogPage = () => {
     const newComment = {
       User: auth.currentUser.displayName,
       comment: commentText,
+      email: user.email,
       createdAt: new Date(), // Assuming you want timestamp for comments
     };
     console.log(commentText);
@@ -171,6 +176,29 @@ const BlogPage = () => {
     }
   };
 
+  const handleEditComment = async (commentId, text) => {
+    try {
+      const updatedComment = { User: user.displayName, comment: text, createdAt: new Date() };
+      await setDoc(doc(firestore, 'Blogs', id, 'Comments', commentId), updatedComment);
+      setEditingCommentId(null);
+      setEditingCommentText('');
+      setSuccessfullSubmit(true);
+    } catch (error) {
+      setErrorMsg('Error editing comment');
+      setShowErrorPopup(true);
+      console.error('Error editing comment:', error);
+    }
+  }
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteDoc(doc(firestore, 'Blogs', id, 'Comments', commentId));
+    } catch (error) {
+      setErrorMsg("Error deleting comment");
+      setShowErrorPopup(true);
+    }
+
+  }
+
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-black text-white' >
       {showErrorPopup && <ErrorPopup message={errorMsg} onClose={handleClose} />}
@@ -185,6 +213,20 @@ const BlogPage = () => {
           />
         </div>
         <div className="text-lg text-gray-400 text-left mb-4"><i>Author: {blog.Owner}</i></div>
+        {blog.tags &&
+          <div className="mt-6 flex flex-row text-left mb-8">
+            <h4 className="text-xl font-semibold text-gray-400 mb-2">Categories:</h4>
+            <div className="flex flex-wrap">
+              {blog.tags.map((category, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-800 text-gray-400 py-1 px-2 mx-1 mb-2 rounded-full text-sm font-medium hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+          </div>}
         <div className="mb-4 text-left text-white blog-content" style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: blog.Content }} />        <div className="text-right mt-4">
           <span className="text-sm"><i>Dated: {new Date(blog.createdAt.seconds * 1000).toLocaleDateString()}</i></span>
         </div>
@@ -216,11 +258,42 @@ const BlogPage = () => {
                 <>
                   {comments.slice(0, displayedCommentsCount).map((comment) => (
                     <div key={comment.id} className="border-b border-gray-400 p-2 mb-4 bg-black-700 rounded h-auto">
-                      <p className="font-bold mb-2 text-white text-left">{comment.User || user.name || 'Anonymous'}</p>
-                      <div style={{ whiteSpace: 'pre-wrap' }}><p className='text-white text-left'>{comment.comment}</p></div>
+                      <div className='flex flex-row justify-between'><p className="font-bold mb-2 text-white text-left">{comment.User || user.name || 'Anonymous'}</p>{comment?.email===user.email &&
+                        <div><button className={`mr-2 text-gray-400 hover:text-white focus:text-purple-500 ${editingCommentId === comment.id ? 'text-purple-500' : 'text-gray-400'}`} onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditingCommentText(comment.comment);
+                        }}>
+                          <FontAwesomeIcon icon={faEdit} />
+
+                        </button>
+                          <button className="text-gray-400 hover:text-white focus:text-red" onClick={() => handleDeleteComment(comment.id)}
+                          >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                          </button>
+                        </div>
+}
+                      </div>
+                      <div className="text-left" style={{ whiteSpace: 'pre-wrap' }}>{editingCommentId === comment.id ? (
+                        <>
+                          <div className='relative'>
+                            <textarea value={editingCommentText} onChange={(e) => setEditingCommentText(e.target.value)} className='text-white bg-black outline text-left p-2 mb-4 bg-black-700 rounded h-auto w-full' />
+                            <button onClick={() => setEditingCommentId(null)} className="absolute right-1 text-white mb-2 mt-1 mx-1">
+                              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button className="px-2 py-1 rounded text-gray-400 hover:bg-gradient-to-r hover:from-blue-500 hover:via-purple-500 hover:to-red-500 hover:text-white transition-all duration-500" onClick={() => handleEditComment(comment.id, editingCommentText)}>
+                            Submit
+                          </button>
+                        </>) : (
+                        <p className='text-white text-left'>{comment.comment}</p>
+                      )}</div>
+
                       <div className="text-right text-gray-400 text-sm">
                         {comment.createdAt.toDate().toLocaleDateString()}
                       </div>
+
 
                       <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="mt-4" key={comment.id}>
                         {showReplyInput[comment.id] && (
